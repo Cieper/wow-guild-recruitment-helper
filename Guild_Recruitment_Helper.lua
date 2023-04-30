@@ -1020,7 +1020,7 @@ function GRH:TimerAnnounce()
 		return
 	end
 	
-	-- requirements not meet, print stats
+	-- requirements not met, print stats
 	if self.trade_id or self.lfg_id then
 		self:Printf(L["Skipping. Trade: %d LFG: %d"], self.trade_cnt, self.lfg_cnt)
 		self.skip_cnt = self.skip_cnt + 1

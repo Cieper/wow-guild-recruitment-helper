@@ -1,12 +1,11 @@
-## Interface: 80000
+## Interface: 100007
 
 ## Title: Guild Recruitment Helper
-## Notes: Helps announce your guild recruitment information to Trade and LFG channels.
-## Notes-ruRU: Переодически отсылает сообщение о наборе в гильдию в торговый канал и канал поиска спутников.
+## Notes:This addon will help announce your guild recruitment information periodically
 
-## Version: 3.4
+## Version: 100007
 
-## Author: janike
+## Author: Cipri, janike
 
 ## SavedVariables: GRHDB
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
