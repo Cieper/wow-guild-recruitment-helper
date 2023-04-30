@@ -8,9 +8,10 @@ Be careful, if you abuse server channels **BLIZZARD COULD SUSPEND/BAN YOUR ACCOU
  
 ## Distribution 
 You can always find the latest version of this addon on:
-- Curseforge
-- WoWInterface
-- Github
+
+* [Curseforge](https://www.curseforge.com/wow/addons/guild-recruitment-helper)
+* [WoWInterface](https://www.wowinterface.com/downloads/info26574-GuildRecruitmentHelper.html)
+* [Github](https://github.com/Cieper/wow-guild-recruitment-helper)
 
 ## History
 * Janike, original code,  2011 ~ 2018
