@@ -516,7 +516,7 @@ end
 function GRH:SetTimer(drift)
 	-- set ldb text
 	self.ldb.text = L["Off"]
-	self.ldb.label = self.ldb.text
+	self.ldb.label = "GRH"
 	
 	-- cancel running timer if any
 	if self.timer then
@@ -538,9 +538,6 @@ function GRH:SetTimer(drift)
 		end
 		
 		
-		-- update ldb text
-		self.ldb.text = format(L["On (%d min)"], self.db.global.timer)
-		self.ldb.label = self.ldb.text
 		self.timer = self:ScheduleTimer("TimerAnnounce", self.db.global.timer * 60 + timer_drift)
 		-- periodic ldb text updates
 		self.timer_ldb = self:ScheduleRepeatingTimer("LDBTimer", 1)
