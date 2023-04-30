@@ -52,13 +52,7 @@ end
 
 -- get server time in unix timestamp format
 local function GetServerTime()
-	local cdate = C_Calendar.GetDate()
-	local weekday, month, day, year = cdate.weekday, cdate.month, cdate.monthDay, cdate.year
-	local hours, minutes = GetGameTime()
-	
-	local timeset = { year = year, month = month, day = day, hour = hours, min = minutes }
-	
-	return time(timeset)
+	return C_DateAndTime.GetServerTimeLocal()
 end
 
 
