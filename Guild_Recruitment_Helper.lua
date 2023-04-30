@@ -440,7 +440,6 @@ function GRH:OnEnable()
 	
 	-- register comm events
 	self:RegisterComm("GRH", "EventComm")
-	self:RegisterComm("GuildRecrAnnoun", "CommAnnounceOld") -- DEPRECATED: considered obsolete as of patch 4.1, we should limit the use of different prefixes, should be removed in later versions
 	
 	-- register console commands
 	self:RegisterChatCommand("grh", "ConsoleCommand")
@@ -1251,35 +1250,6 @@ function GRH:EventComm(prefix, message, distribution, sender)
 		self:Printf("DEBUG: EventComm - Unregistered event received from '%s'. Event: '%s' arg1: '%s' arg2: '%s' arg3: '%s'", sender, tostring(event), tostring(arg1), tostring(arg2), tostring(arg3))
 	end
 end
-
--- Fired when another player on your guild announce message to channels
--- DEPRECATED: this function considered obsolete as of patch 4.1, we should limit the use of different prefixes and remove this few versions later
-function GuildRecr:CommAnnounceOld(prefix, message, distribution, sender)
-	-- should we care?
-	if not sender or sender == UnitName("player") then
-		return
-	end
-
-	if self.db.global.guild_coop then
-		self.guild_coop_by = sender
-	end
-	
-	-- notify player that a newer version of addon available
-	--@non-alpha@
-	-- init notify list
-	if type(self.old_CommAnnounce) ~= "table" then
-		self.old_CommAnnounce = {}
-	end
-	
-	-- check and notify once
-	if not self.old_CommAnnounce[sender] then
-		self.old_CommAnnounce[sender] = true
-		self:Printf(L["Player %s use old version of addon. Notification sent."], sender)
-		SendChatMessage(L["You are using old version of Guild Recruitment Helper addon. Please upgrade."], "WHISPER", nil, sender)
-	end
-	--@end-non-alpha@
-end
-
 
 --
 -- Console commands
