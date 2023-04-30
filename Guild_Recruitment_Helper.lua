@@ -23,8 +23,8 @@ addon_revision = 57
 --@end-non-alpha@
 
 
-GuildRecr = LibStub("AceAddon-3.0"):NewAddon("GuildRecr", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceComm-3.0", "AceSerializer-3.0")
-local L = LibStub("AceLocale-3.0"):GetLocale("GuildRecr", true)
+GRH = LibStub("AceAddon-3.0"):NewAddon("GRH", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceComm-3.0", "AceSerializer-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("GRH", true)
 local LibC = LibStub:GetLibrary("LibCompress")
 local LibCE = LibC:GetAddonEncodeTable()
 
@@ -52,13 +52,7 @@ end
 
 -- get server time in unix timestamp format
 local function GetServerTime()
-	local cdate = C_Calendar.GetDate()
-	local weekday, month, day, year = cdate.weekday, cdate.month, cdate.monthDay, cdate.year
-	local hours, minutes = GetGameTime()
-	
-	local timeset = { year = year, month = month, day = day, hour = hours, min = minutes }
-	
-	return time(timeset)
+	return C_DateAndTime.GetServerTimeLocal()
 end
 
 
@@ -70,39 +64,39 @@ end
 local function UpdateConfRevision(changed)
 	local gametime = GetServerTime()
 	
-	if changed and GuildRecr.db.global.sync_revision ~= gametime then
+	if changed and GRH.db.global.sync_revision ~= gametime then
 		if debug then
-			GuildRecr:Printf("DEBUG: config revision changed from '%s' to '%s'", tostring(GuildRecr.db.global.sync_revision), tostring(gametime))
+			GRH:Printf("DEBUG: config revision changed from '%s' to '%s'", tostring(GRH.db.global.sync_revision), tostring(gametime))
 		end
 		
-		GuildRecr.db.global.sync_revision = gametime
+		GRH.db.global.sync_revision = gametime
 	end
 end
 
 -- get option value
 local function GetGlobalOptionLocal(info)
-	return GuildRecr.db.global[info[#info]]
+	return GRH.db.global[info[#info]]
 end
 
 -- set option value
 local function SetGlobalOptionLocal(info, value)
-	if debug and GuildRecr.db.global[info[#info]] ~= value then
-		GuildRecr:Printf("DEBUG: global option %s changed from '%s' to '%s'", info[#info], tostring(GuildRecr.db.global[info[#info]]), tostring(value))
+	if debug and GRH.db.global[info[#info]] ~= value then
+		GRH:Printf("DEBUG: global option %s changed from '%s' to '%s'", info[#info], tostring(GRH.db.global[info[#info]]), tostring(value))
 	end
 
-	GuildRecr.db.global[info[#info]] = value
+	GRH.db.global[info[#info]] = value
 end
 
 -- set versioned option value (for guild sync)
 local function SetGlobalOptionVersioned(info, value)
 	-- update revision if needed
-	UpdateConfRevision(GuildRecr.db.global[info[#info]] ~= value)
+	UpdateConfRevision(GRH.db.global[info[#info]] ~= value)
 	
 	-- set option
 	SetGlobalOptionLocal(info, value)
 	
 	-- reschedule timer on versioned option change to sync successfully
-	GuildRecr:SetTimer()
+	GRH:SetTimer()
 end
 
 -- format message (substitude some tags in text like $glevel and $gname)
@@ -153,8 +147,8 @@ local function SetMessage(info, value)
 	-- put lines back together
 	msg = strjoin("\n", l1, l2)
 	
-	if debug and GuildRecr.db.global[info[#info]] ~= msg then
-		GuildRecr:Printf("DEBUG: global option %s changed. L1_diff: %d L2_diff: %d", info[#info], l1_diff, l2_diff)
+	if debug and GRH.db.global[info[#info]] ~= msg then
+		GRH:Printf("DEBUG: global option %s changed. L1_diff: %d L2_diff: %d", info[#info], l1_diff, l2_diff)
 	end
 	
 	-- update config
@@ -190,7 +184,7 @@ local defaults = {
 -- declare config interface
 local options = {
     name = "Guild Recruitment",
-    handler = GuildRecr,
+    handler = GRH,
     type = "group",
 	childGroups = "tab",
     args = {
@@ -206,11 +200,11 @@ local options = {
 					desc = L["Enable or disable addon functionality."],
 					width = "full",
 					get =	function ()
-								return GuildRecr.db.realm.enabled
+								return GRH.db.realm.enabled
 							end,
 					set =	function (info, value)
-								GuildRecr.db.realm.enabled = value
-								GuildRecr:SetTimer()
+								GRH.db.realm.enabled = value
+								GRH:SetTimer()
 							end,
 				},
 				description = {
@@ -373,7 +367,7 @@ local options = {
 					get = GetGlobalOptionLocal,
 					set = 	function (info, value)
 								SetGlobalOptionLocal(info, value)
-								if not value then GuildRecr:SetDND(true) end -- clear dnd
+								if not value then GRH:SetDND(true) end -- clear dnd
 							end,
 				},
 				dnd_msg = {
@@ -385,7 +379,7 @@ local options = {
 					get = GetGlobalOptionLocal,
 					set = 	function (info, value)
 								SetGlobalOptionLocal(info, strtrim(value))
-								GuildRecr:SetDND(true) -- clear dnd
+								GRH:SetDND(true) -- clear dnd
 							end,
 				},
 			},
@@ -399,16 +393,16 @@ local options = {
 --
 
 -- Code that you want to run when the addon is first loaded goes here.
-function GuildRecr:OnInitialize()
+function GRH:OnInitialize()
     -- initialize saved variables
-	self.db = LibStub("AceDB-3.0"):New("GuildRecrDB", defaults, true)
+	self.db = LibStub("AceDB-3.0"):New("GRHDB", defaults, true)
 	
 	-- setup variables
 	self:InitVars()
 	
 	-- initialize configuration options
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("GuildRecr", options)
-	self.configFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("GuildRecr", "Guild Recruitment");
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("GRH", options)
+	self.configFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("GRH", "Guild Recruitment");
 	
 	-- create LibDataBroker
 	self.ldb = LibStub("LibDataBroker-1.1"):NewDataObject("Guild Recruitment", {
@@ -419,11 +413,11 @@ function GuildRecr:OnInitialize()
 		OnClick =	function (frame, button)
 						if button == "LeftButton" then
 							-- update config
-							GuildRecr.db.realm.enabled = not GuildRecr.db.realm.enabled
-							LibStub("AceConfigRegistry-3.0"):NotifyChange("GuildRecr")
+							GRH.db.realm.enabled = not GRH.db.realm.enabled
+							LibStub("AceConfigRegistry-3.0"):NotifyChange("GRH")
 
 							-- reschedule timer
-							GuildRecr:SetTimer()
+							GRH:SetTimer()
 						else
 							-- RightButton: options menu
 							InterfaceOptionsFrame_OpenToCategory(self.configFrame)
@@ -439,17 +433,16 @@ function GuildRecr:OnInitialize()
 end
 
 -- Called when the addon is enabled
-function GuildRecr:OnEnable()
+function GRH:OnEnable()
 	-- register events
 	self:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE", "EventChannelNotice")
 	self:RegisterEvent("CHAT_MSG_CHANNEL", "EventChannelMsg")
 	
 	-- register comm events
-	self:RegisterComm("GuildRecr", "EventComm")
-	self:RegisterComm("GuildRecrAnnoun", "CommAnnounceOld") -- DEPRECATED: considered obsolete as of patch 4.1, we should limit the use of different prefixes, should be removed in later versions
+	self:RegisterComm("GRH", "EventComm")
 	
 	-- register console commands
-	self:RegisterChatCommand("guildrecr", "ConsoleCommand")
+	self:RegisterChatCommand("grh", "ConsoleCommand")
 	self:RegisterChatCommand("grec", "ConsoleCommand")
 	self:RegisterChatCommand("gr", "ConsoleCommand")
 	
@@ -461,7 +454,7 @@ function GuildRecr:OnEnable()
 end
 
 -- Called when the addon is disabled
-function GuildRecr:OnDisable()
+function GRH:OnDisable()
 	-- unregister events
 	self:UnregisterAllEvents()
 	
@@ -469,7 +462,7 @@ function GuildRecr:OnDisable()
 	self:UnregisterAllComm()
 	
 	-- unregister console commands
-	self:UnregisterChatCommand("guildrecr")
+	self:UnregisterChatCommand("GRH")
 	self:UnregisterChatCommand("grec")
 	self:UnregisterChatCommand("gr")
 	
@@ -478,7 +471,7 @@ function GuildRecr:OnDisable()
 end
 
 -- Initalize local variables
-function GuildRecr:InitVars()
+function GRH:InitVars()
 	-- general, trade and lfg channels id
 	self.general_id = nil
 	self.trade_id = nil
@@ -508,7 +501,7 @@ function GuildRecr:InitVars()
 end
 
 -- Initalize profile variables
-function GuildRecr:InitProfileVars()
+function GRH:InitProfileVars()
 	-- sanitize sync data
 	if not self.db.global.sync_revision or self.db.global.sync_revision > GetServerTime() then
 		self.db.global.sync_revision = 0
@@ -520,10 +513,14 @@ function GuildRecr:InitProfileVars()
 end
 
 -- Setup announce timer
-function GuildRecr:SetTimer(drift)
+function GRH:SetTimer(drift)
+	if debug then
+		self:Printf("DEBUG: SetTimer called with %d drift", drift)
+	end
+
 	-- set ldb text
 	self.ldb.text = L["Off"]
-	self.ldb.label = self.ldb.text
+	self.ldb.label = "GRH"
 	
 	-- cancel running timer if any
 	if self.timer then
@@ -544,18 +541,15 @@ function GuildRecr:SetTimer(drift)
 			timer_drift = random(drift)
 		end
 		
-		self.timer = self:ScheduleRepeatingTimer("TimerAnnounce", self.db.global.timer * 60 + timer_drift)
 		
-		-- update ldb text
-		self.ldb.text = format(L["On (%d min)"], self.db.global.timer)
-		self.ldb.label = self.ldb.text
-		-- pereodic ldb text updates
+		self.timer = self:ScheduleTimer("TimerAnnounce", self.db.global.timer * 60 + timer_drift)
+		-- periodic ldb text updates
 		self.timer_ldb = self:ScheduleRepeatingTimer("LDBTimer", 1)
 	end
 end
 
 -- LDB timer handler
-function GuildRecr:LDBTimer()
+function GRH:LDBTimer()
 	-- update ldb text
 	if not self.timer then
 		self.ldb.text = L["Off"]
@@ -599,7 +593,7 @@ function GuildRecr:LDBTimer()
 end
 
 -- set DND status if requested
-function GuildRecr:SetDND(clear)
+function GRH:SetDND(clear)
 	-- clear DND status
 	if clear and self.dnd_set and UnitIsDND("player") then
 		if debug then
@@ -627,12 +621,12 @@ function GuildRecr:SetDND(clear)
 end
 
 -- check for data available and addon running
-function GuildRecr:IsDataReady()
+function GRH:IsDataReady()
 	return self.db.realm.enabled and self.db.global.message and strtrim(self.db.global.message) and (self.db.global.announce_general or self.db.global.announce_trade or self.db.global.announce_lfg)
 end
 
 -- get configuration revision number and a key as a string
-function GuildRecr:GetConfRevStr()
+function GRH:GetConfRevStr()
 	local revision = tostring(self.db.global.guild_sync and self.db.global.sync_revision or "sync_disabled")
 	local key = self.db.global.sync_key
 	
@@ -644,7 +638,7 @@ function GuildRecr:GetConfRevStr()
 end
 
 -- offer configuration to guild or player
-function GuildRecr:OfferConf(dest)
+function GRH:OfferConf(dest)
 	if not dest or not self:IsDataReady() then
 		if debug then
 			self:Print("DEBUG: Offering configuration cancelled. Addon disabled or no data ready.")
@@ -698,11 +692,11 @@ function GuildRecr:OfferConf(dest)
 	
 	-- send config
 	local msg = format("ConfigOffer %s %d %s", self:GetConfRevStr(), addon_revision, conf, "BULK")
-	self:SendCommMessage("GuildRecr", msg, dist, target)
+	self:SendCommMessage("GRH", msg, dist, target)
 end
 
 -- request configuration from guild or player
-function GuildRecr:RequestConf(dest)
+function GRH:RequestConf(dest)
 	if not dest then
 		return
 	end
@@ -721,11 +715,11 @@ function GuildRecr:RequestConf(dest)
 	
 	-- send request
 	local msg = format("ConfigRequest %s", self:GetConfRevStr())
-	self:SendCommMessage("GuildRecr", msg, dist, target)
+	self:SendCommMessage("GRH", msg, dist, target)
 end
 
 -- validate and accept configuration
-function GuildRecr:AcceptConf(text)
+function GRH:AcceptConf(text)
 	if debug then
 		self:Print("DEBUG: Accepting configuration...")
 	end
@@ -823,10 +817,10 @@ function GuildRecr:AcceptConf(text)
 	end
 	
 	-- update config interface
-	LibStub("AceConfigRegistry-3.0"):NotifyChange("GuildRecr")
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("GRH")
 
 	-- reschedule timer with drift
-	GuildRecr:SetTimer(30)
+	GRH:SetTimer(30)
 	
 	if debug then
 		self:Printf("DEBUG: Configuration accepted! Revision: %d", config.sync_revision)
@@ -841,7 +835,7 @@ end
 --
 
 -- Fired when you enter or leave a chat channel
-function GuildRecr:EventChannelNotice(event, arg1, _, _, _, _, _, arg7, arg8)
+function GRH:EventChannelNotice(event, arg1, _, _, _, _, _, arg7, arg8)
 	-- arg7 channel type (1 - General, 2 - Trade, 26 - LFG)
 	-- arg8 channel number
 	
@@ -862,13 +856,13 @@ function GuildRecr:EventChannelNotice(event, arg1, _, _, _, _, _, arg7, arg8)
 	if arg7 == 1 then
 		if arg1 == "YOU_JOINED" or arg1 == "YOU_CHANGED" then
 			if debug then
-				GuildRecr:Print("DEBUG: joined General channel.")
+				GRH:Print("DEBUG: joined General channel.")
 			end
 
 			self.general_id = arg8
 		else
 			if debug then
-				GuildRecr:Print("DEBUG: left General channel.")
+				GRH:Print("DEBUG: left General channel.")
 			end
 
 			self.general_id = nil
@@ -879,13 +873,13 @@ function GuildRecr:EventChannelNotice(event, arg1, _, _, _, _, _, arg7, arg8)
 	if arg7 == 2 then
 		if arg1 == "YOU_JOINED" then
 			if debug then
-				GuildRecr:Print("DEBUG: joined Trade channel.")
+				GRH:Print("DEBUG: joined Trade channel.")
 			end
 
 			self.trade_id = arg8
 		else
 			if debug then
-				GuildRecr:Print("DEBUG: left Trade channel.")
+				GRH:Print("DEBUG: left Trade channel.")
 			end
 
 			self.trade_id = nil
@@ -896,13 +890,13 @@ function GuildRecr:EventChannelNotice(event, arg1, _, _, _, _, _, arg7, arg8)
 	if arg7 == 26 then
 		if arg1 == "YOU_JOINED" then
 			if debug then
-				GuildRecr:Print("DEBUG: joined LFG channel.")
+				GRH:Print("DEBUG: joined LFG channel.")
 			end
 
 			self.lfg_id = arg8
 		else
 			if debug then
-				GuildRecr:Print("DEBUG: left LFG channel.")
+				GRH:Print("DEBUG: left LFG channel.")
 			end
 
 			self.lfg_id = nil
@@ -916,7 +910,7 @@ function GuildRecr:EventChannelNotice(event, arg1, _, _, _, _, _, arg7, arg8)
 end
 
 -- Fired when the client receives a channel message.
-function GuildRecr:EventChannelMsg(event, _, _, _, _, _, _, arg7, arg8)
+function GRH:EventChannelMsg(event, _, _, _, _, _, _, arg7, arg8)
 	-- sanity check
 	if not arg7 or not arg8 then
 		if debug then
@@ -929,7 +923,7 @@ function GuildRecr:EventChannelMsg(event, _, _, _, _, _, _, arg7, arg8)
 	-- fix reload: rejoin channels if message received on that channel
 	if arg7 == 1 then
 		if debug and not self.general_id then
-			GuildRecr:Print("DEBUG: joined General channel.")
+			GRH:Print("DEBUG: joined General channel.")
 		end
 		
 		self.general_id = arg8
@@ -937,7 +931,7 @@ function GuildRecr:EventChannelMsg(event, _, _, _, _, _, _, arg7, arg8)
 
 	if arg7 == 2 then
 		if debug and not self.trade_id then
-			GuildRecr:Print("DEBUG: joined Trade channel.")
+			GRH:Print("DEBUG: joined Trade channel.")
 		end
 		
 		self.trade_id = arg8
@@ -945,7 +939,7 @@ function GuildRecr:EventChannelMsg(event, _, _, _, _, _, _, arg7, arg8)
 
 	if arg7 == 26 then
 		if debug and not self.lfg_id then
-			GuildRecr:Print("DEBUG: joined LFG channel.")
+			GRH:Print("DEBUG: joined LFG channel.")
 		end
 
 		self.lfg_id = arg8
@@ -963,7 +957,10 @@ function GuildRecr:EventChannelMsg(event, _, _, _, _, _, _, arg7, arg8)
 end
 
 -- Announce timer handler
-function GuildRecr:TimerAnnounce()
+function GRH:TimerAnnounce()
+	if debug then
+		self:Print("DEBUG: Time to announce something!")
+	end
 	-- enabled but no data/channels?!
 	if not self:IsDataReady() then
 		self:Print(L["Addon enabled, but no message or channels selected."])
@@ -1023,15 +1020,19 @@ function GuildRecr:TimerAnnounce()
 		return
 	end
 	
-	-- requirements not meet, print stats
+	-- requirements not met, print stats
 	if self.trade_id or self.lfg_id then
 		self:Printf(L["Skipping. Trade: %d LFG: %d"], self.trade_cnt, self.lfg_cnt)
 		self.skip_cnt = self.skip_cnt + 1
 	end
+
+	-- Unable to send message. Try again in a few minutes.
+	self:Printf("Nowhere to announce. Try again later...")
+	self:SetTimer()
 end
 
 -- send message to specified channel
-function GuildRecr:Announce(channel)
+function GRH:Announce(channel)
 	if not channel or not self.db.global.message or not strtrim(self.db.global.message) then
 		return
 	end
@@ -1052,7 +1053,14 @@ function GuildRecr:Announce(channel)
 				if self.db.global.test_mode then
 					self:Print(L["Test mode"] .. ": " .. line)
 				else
-					SendChatMessage(line, "CHANNEL", nil, channel)
+					-- Pass SetTimer via callback option to schedule the next message.
+					-- As we're in a loop, SetTimer might be called twice, but that's no problem.
+					local queue = MessageQueue.SendChatMessage(line, "CHANNEL", nil, channel, function()
+						GRH:SetTimer()
+					end)
+					if debug then
+						self:Printf("DEBUG: Placed message in queue to be sent. (%s)", tostring(queue))
+					end
 				end
 			end
 		end
@@ -1060,7 +1068,7 @@ function GuildRecr:Announce(channel)
 
 	-- announce guild event if needed
 	if self.db.global.guild_coop and IsInGuild() then
-		self:SendCommMessage("GuildRecr", "Announce " .. self:GetConfRevStr(), "GUILD")
+		self:SendCommMessage("GRH", "Announce " .. self:GetConfRevStr(), "GUILD")
 	end
 	
 	-- set DND if needed
@@ -1068,7 +1076,7 @@ function GuildRecr:Announce(channel)
 end
 
 -- addon communication event
-function GuildRecr:EventComm(prefix, message, distribution, sender)
+function GRH:EventComm(prefix, message, distribution, sender)
 	-- should we care?
 	if not message or not sender or sender == UnitName("player") then
 		return
@@ -1251,41 +1259,12 @@ function GuildRecr:EventComm(prefix, message, distribution, sender)
 	end
 end
 
--- Fired when another player on your guild announce message to channels
--- DEPRECATED: this function considered obsolete as of patch 4.1, we should limit the use of different prefixes and remove this few versions later
-function GuildRecr:CommAnnounceOld(prefix, message, distribution, sender)
-	-- should we care?
-	if not sender or sender == UnitName("player") then
-		return
-	end
-
-	if self.db.global.guild_coop then
-		self.guild_coop_by = sender
-	end
-	
-	-- notify player that a newer version of addon available
-	--@non-alpha@
-	-- init notify list
-	if type(self.old_CommAnnounce) ~= "table" then
-		self.old_CommAnnounce = {}
-	end
-	
-	-- check and notify once
-	if not self.old_CommAnnounce[sender] then
-		self.old_CommAnnounce[sender] = true
-		self:Printf(L["Player %s use old version of addon. Notification sent."], sender)
-		SendChatMessage(L["You are using old version of Guild Recruitment Helper addon. Please upgrade."], "WHISPER", nil, sender)
-	end
-	--@end-non-alpha@
-end
-
-
 --
 -- Console commands
 --
 
 -- Process the slash command ("input" contains whatever follows the slash command)
-function GuildRecr:ConsoleCommand(input)
+function GRH:ConsoleCommand(input)
 	-- show configuration window if no params given
 	if not input or input:trim() == "" then
 		InterfaceOptionsFrame_OpenToCategory(self.configFrame)

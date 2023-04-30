@@ -1,0 +1,24 @@
+## Interface: 100007
+
+## Title: Guild Recruitment Helper
+## Notes:This addon will help announce your guild recruitment information periodically
+
+## Version: 100007
+
+## Author: Cipri, janike
+
+## SavedVariables: GRHDB
+## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
+## RequiredDeps: MessageQueue
+
+
+#@no-lib-strip@
+embeds.xml
+#@end-no-lib-strip@
+
+Locales\enUS.lua
+Locales\ruRU.lua
+Locales\frFR.lua
+Locales\deDE.lua
+
+Guild_Recruitment_Helper.lua

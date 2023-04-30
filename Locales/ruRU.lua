@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("GuildRecr", "ruRU")
+local L = LibStub("AceLocale-3.0"):NewLocale("GRH", "ruRU")
 if not L then return end
 
 L["Addon enabled, but no message or channels selected."] = "Аддон включен, но нет сообщения для отправки или все каналы отключены."
