@@ -514,6 +514,10 @@ end
 
 -- Setup announce timer
 function GRH:SetTimer(drift)
+	if debug then
+		self:Printf("DEBUG: SetTimer called with %d drift", drift)
+	end
+
 	-- set ldb text
 	self.ldb.text = L["Off"]
 	self.ldb.label = "GRH"
@@ -954,6 +958,9 @@ end
 
 -- Announce timer handler
 function GRH:TimerAnnounce()
+	if debug then
+		self:Print("DEBUG: Time to announce something!")
+	end
 	-- enabled but no data/channels?!
 	if not self:IsDataReady() then
 		self:Print(L["Addon enabled, but no message or channels selected."])
@@ -1018,6 +1025,10 @@ function GRH:TimerAnnounce()
 		self:Printf(L["Skipping. Trade: %d LFG: %d"], self.trade_cnt, self.lfg_cnt)
 		self.skip_cnt = self.skip_cnt + 1
 	end
+
+	-- Unable to send message. Try again in a few minutes.
+	self:Printf("Nowhere to announce. Try again later...")
+	self:SetTimer()
 end
 
 -- send message to specified channel
