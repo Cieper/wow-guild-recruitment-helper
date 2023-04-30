@@ -1,0 +1,5 @@
+All Rights Reserved unless otherwise explicitly stated.
+
+- Original code (C) 2011 - 2018 Janike,
+
+- Resurrected and updated to Dragonflight by Cipri - 2023
