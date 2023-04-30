@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("GuildRecr", "enUS", true)
+local L = LibStub("AceLocale-3.0"):NewLocale("GRH", "enUS", true)
 
 L["Addon enabled, but no message or channels selected."] = true
 L["addon_description"] = [=[This add-on will broadcast your message periodically to one or two channels. If you select both LFG and Trade channel, it will not broadcast simultaneously to both channels, instead it will select channel with most traffic and announce to it more frequently, it will not however forget about second channel.

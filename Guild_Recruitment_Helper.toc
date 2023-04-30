@@ -8,7 +8,7 @@
 
 ## Author: janike
 
-## SavedVariables: GuildRecrDB
+## SavedVariables: GRHDB
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
 
 
@@ -21,4 +21,4 @@ Locales\ruRU.lua
 Locales\frFR.lua
 Locales\deDE.lua
 
-GuildRecr.lua
+Guild_Recruitment_Helper.lua
