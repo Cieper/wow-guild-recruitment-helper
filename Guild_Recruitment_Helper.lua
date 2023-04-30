@@ -544,12 +544,12 @@ function GRH:SetTimer(drift)
 			timer_drift = random(drift)
 		end
 		
-		self.timer = self:ScheduleRepeatingTimer("TimerAnnounce", self.db.global.timer * 60 + timer_drift)
 		
 		-- update ldb text
 		self.ldb.text = format(L["On (%d min)"], self.db.global.timer)
 		self.ldb.label = self.ldb.text
-		-- pereodic ldb text updates
+		self.timer = self:ScheduleTimer("TimerAnnounce", self.db.global.timer * 60 + timer_drift)
+		-- periodic ldb text updates
 		self.timer_ldb = self:ScheduleRepeatingTimer("LDBTimer", 1)
 	end
 end
@@ -1052,7 +1052,14 @@ function GRH:Announce(channel)
 				if self.db.global.test_mode then
 					self:Print(L["Test mode"] .. ": " .. line)
 				else
-					SendChatMessage(line, "CHANNEL", nil, channel)
+					-- Pass SetTimer via callback option to schedule the next message.
+					-- As we're in a loop, SetTimer might be called twice, but that's no problem.
+					local queue = MessageQueue.SendChatMessage(line, "CHANNEL", nil, channel, function()
+						GRH:SetTimer()
+					end)
+					if debug then
+						self:Printf("DEBUG: Placed message in queue to be sent. (%s)", tostring(queue))
+					end
 				end
 			end
 		end
