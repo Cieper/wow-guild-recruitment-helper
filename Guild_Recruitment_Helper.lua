@@ -12,14 +12,14 @@
 
 -- debug mode variable
 local debug = false
---[===[@alpha@
+--@alpha@
 debug = true
---@end-alpha@]===]
+--@end-alpha@
 
 -- use addon revision for non alpha builds (for update notification feature)
 local addon_revision = 0
 --@non-alpha@
-addon_revision = 57
+addon_revision = @project-revision@
 --@end-non-alpha@
 
 
