@@ -1,9 +1,12 @@
-## Interface: 100007
+## Interface: 100100
+## X-Curse-Project-ID: 856482
+## X-WoWI-ID: 26574
+## X-Wago-ID: v63oo46b
 
 ## Title: Guild Recruitment Helper
 ## Notes:This addon will help announce your guild recruitment information periodically
 
-## Version: 100007
+## Version: 100100
 
 ## Author: Cipri, janike
 
@@ -12,9 +15,7 @@
 ## RequiredDeps: MessageQueue
 
 
-#@no-lib-strip@
 embeds.xml
-#@end-no-lib-strip@
 
 Locales\enUS.lua
 Locales\ruRU.lua
