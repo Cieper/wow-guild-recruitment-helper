@@ -1,4 +1,4 @@
-## Interface: 100100
+## Interface: 120100
 ## X-Curse-Project-ID: 856482
 ## X-WoWI-ID: 26574
 ## X-Wago-ID: v63oo46b
@@ -6,7 +6,7 @@
 ## Title: Guild Recruitment Helper
 ## Notes:This addon will help announce your guild recruitment information periodically
 
-## Version: 100100
+## Version: @project-version@
 
 ## Author: Cipri, janike
 

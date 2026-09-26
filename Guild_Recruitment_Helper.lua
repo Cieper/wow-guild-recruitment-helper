@@ -402,7 +402,7 @@ function GRH:OnInitialize()
 	
 	-- initialize configuration options
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("GRH", options)
-	self.configFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("GRH", "Guild Recruitment");
+	self.configFrame, self.configCategoryID = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("GRH", "Guild Recruitment");
 	
 	-- create LibDataBroker
 	self.ldb = LibStub("LibDataBroker-1.1"):NewDataObject("Guild Recruitment", {
@@ -420,7 +420,7 @@ function GRH:OnInitialize()
 							GRH:SetTimer()
 						else
 							-- RightButton: options menu
-							InterfaceOptionsFrame_OpenToCategory(self.configFrame)
+							Settings.OpenToCategory(self.configCategoryID)
 						end
 					end,
 		OnTooltipShow =	function(tooltip)
@@ -524,12 +524,12 @@ function GRH:SetTimer(drift)
 	
 	-- cancel running timer if any
 	if self.timer then
-		self:CancelTimer(self.timer, false)
+		self:CancelTimer(self.timer)
 		self.timer = nil
 	end
 
 	if self.timer_ldb then
-		self:CancelTimer(self.timer_ldb, false)
+		self:CancelTimer(self.timer_ldb)
 		self.timer_ldb = nil
 	end
 	
@@ -594,29 +594,31 @@ end
 
 -- set DND status if requested
 function GRH:SetDND(clear)
+	local isDND = UnitIsDND("player")
+
 	-- clear DND status
-	if clear and self.dnd_set and UnitIsDND("player") then
+	if clear and self.dnd_set and canaccessvalue(isDND) and isDND then
 		if debug then
 			self:Print("DEBUG: DND mode cleared")
 		end
-		
+
 		self.dnd_set = false
-		SendChatMessage("", "DND")
+		C_ChatInfo.SendChatMessage("", "DND")
 		return
 	end
-	
+
 	-- set DND if required
 	if clear or not self.db.global.set_dnd or not self.db.global.dnd_msg then
 		return
 	end
-	
-	if not UnitIsDND("player") then
+
+	if canaccessvalue(isDND) and not isDND then
 		if debug then
 			self:Print("DEBUG: DND mode set")
 		end
-		
+
 		self.dnd_set = true
-		SendChatMessage(self.db.global.dnd_msg, "DND")
+		C_ChatInfo.SendChatMessage(self.db.global.dnd_msg, "DND")
 	end
 end
 
@@ -1267,7 +1269,7 @@ end
 function GRH:ConsoleCommand(input)
 	-- show configuration window if no params given
 	if not input or input:trim() == "" then
-		InterfaceOptionsFrame_OpenToCategory(self.configFrame)
+		Settings.OpenToCategory(self.configCategoryID)
 	end
 	
 	if input == "debug" then
