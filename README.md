@@ -13,7 +13,10 @@ You can always find the latest version of this addon on:
 * [WoWInterface](https://www.wowinterface.com/downloads/info26574-GuildRecruitmentHelper.html)
 * [Github](https://github.com/Cieper/wow-guild-recruitment-helper)
 
+## License
+
+MIT, see [LICENSE](LICENSE).
+
 ## History
-* Janike, original code,  2011 ~ 2018
-* Isilorn, Guild cooperation Code, frFR localization
-* Cipri, updating the addon for Dragonflight
+
+This is a rewrite of an earlier similar addon made and maintained by Janike from ~2011 till ~2018, with help from Isilorn 
